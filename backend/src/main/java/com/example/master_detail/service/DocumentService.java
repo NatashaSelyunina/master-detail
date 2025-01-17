@@ -1,7 +1,8 @@
 package com.example.master_detail.service;
 
-import com.example.master_detail.entity.Document;
+import com.example.master_detail.dto.DocumentDto;
 
 public interface DocumentService {
-    Document createDocument();
+
+    DocumentDto createDocument(DocumentDto documentDto);
 }
