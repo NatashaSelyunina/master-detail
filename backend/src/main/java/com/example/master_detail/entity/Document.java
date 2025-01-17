@@ -19,6 +19,7 @@ public class Document {
     @Setter(AccessLevel.NONE)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String number;
 
     private LocalDate date;
