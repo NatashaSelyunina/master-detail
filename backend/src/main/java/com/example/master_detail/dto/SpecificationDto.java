@@ -9,14 +9,14 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
 public class SpecificationDto {
-
-    private Long id;
 
     @NotNull
     private String title;
@@ -25,14 +25,25 @@ public class SpecificationDto {
 
     public static SpecificationDto from(Specification specification) {
         return new SpecificationDto(
-                specification.getId(),
                 specification.getTitle(),
                 specification.getSum());
     }
 
-    public static List<SpecificationDto> from(List<Specification> specifications) {
+    public static Set<SpecificationDto> from(Set<Specification> specifications) {
         return specifications.stream()
                 .map(SpecificationDto::from)
-                .toList();
+                .collect(Collectors.toSet());
+    }
+
+    public static Specification to(SpecificationDto specificationDto) {
+        return new Specification(
+                specificationDto.title,
+                specificationDto.sum);
+    }
+
+    public static Set<Specification> to(Set<SpecificationDto> specificationDtos) {
+        return specificationDtos.stream()
+                .map(SpecificationDto::to)
+                .collect(Collectors.toSet());
     }
 }

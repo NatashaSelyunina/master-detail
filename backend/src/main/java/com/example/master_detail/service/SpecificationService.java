@@ -1,8 +1,13 @@
 package com.example.master_detail.service;
 
 import com.example.master_detail.dto.SpecificationDto;
+import com.example.master_detail.entity.Specification;
+
+import java.util.Set;
 
 public interface SpecificationService {
 
-    SpecificationDto save(SpecificationDto specificationDto, Long documentId);
+    Set<Specification> save(Set<SpecificationDto> specificationDtos);
+
+    SpecificationDto add(SpecificationDto specificationDto, Long documentId);
 }

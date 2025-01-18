@@ -17,11 +17,15 @@ public class Specification {
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(unique = true, nullable = false)
     private String title;
 
     private BigDecimal sum;
 
     @ManyToOne
     private Document document;
+
+    public Specification(String title, BigDecimal sum) {
+        this.title = title;
+        this.sum = sum;
+    }
 }

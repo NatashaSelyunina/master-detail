@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SpecificationRepository extends JpaRepository<Specification, Long> {
 
+    boolean existsSpecificationTitleByDocumentId(Long documentId, String title);
 }
