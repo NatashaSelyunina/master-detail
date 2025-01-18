@@ -29,10 +29,10 @@ public class SpecificationDto {
                 specification.getSum());
     }
 
-    public static Set<SpecificationDto> from(Set<Specification> specifications) {
+    public static List<SpecificationDto> from(List<Specification> specifications) {
         return specifications.stream()
                 .map(SpecificationDto::from)
-                .collect(Collectors.toSet());
+                .toList();
     }
 
     public static Specification to(SpecificationDto specificationDto) {
@@ -41,9 +41,9 @@ public class SpecificationDto {
                 specificationDto.sum);
     }
 
-    public static Set<Specification> to(Set<SpecificationDto> specificationDtos) {
+    public static List<Specification> to(List<SpecificationDto> specificationDtos) {
         return specificationDtos.stream()
                 .map(SpecificationDto::to)
-                .collect(Collectors.toSet());
+                .toList();
     }
 }

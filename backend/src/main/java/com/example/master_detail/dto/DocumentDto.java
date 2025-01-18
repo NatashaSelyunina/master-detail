@@ -10,7 +10,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,10 +29,10 @@ public class DocumentDto {
 
     private String note;
 
-    private Set<SpecificationDto> specifications;
+    private List<SpecificationDto> specifications;
 
     public static DocumentDto from(Document document) {
-        Set<SpecificationDto> specifications = SpecificationDto.from(document.getSpecifications());
+        List<SpecificationDto> specifications = SpecificationDto.from(document.getSpecifications());
         return new DocumentDto(
                 document.getId(),
                 document.getNumber(),
@@ -41,5 +40,11 @@ public class DocumentDto {
                 document.getSum(),
                 document.getNote(),
                 specifications);
+    }
+
+    public static List<DocumentDto> from(List<Document> documents) {
+        return documents.stream()
+                .map(DocumentDto::from)
+                .toList();
     }
 }

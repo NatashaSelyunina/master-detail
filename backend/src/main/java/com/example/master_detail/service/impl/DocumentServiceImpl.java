@@ -10,7 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.List;
 
 @AllArgsConstructor
 @Setter
@@ -29,14 +30,20 @@ public class DocumentServiceImpl implements DocumentService {
         document.setId(0L);
         document.setNumber(documentDto.getNumber().trim().toLowerCase());
         document.setDate(documentDto.getDate());
-        document.setSum(documentDto.getSum());
         document.setNote(document.getNote().toLowerCase());
 
-        Set<Specification> specifications = specificationService.save(documentDto.getSpecifications());
-        document.setSpecifications(specifications);
-
+        List<Specification> specifications = specificationService.save(documentDto.getSpecifications(), document);
+        BigDecimal documentSum = specifications.stream()
+                        .map(Specification::getSum)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+        document.setSum(documentSum);
         documentRepository.save(document);
         return DocumentDto.from(document);
+    }
+
+    @Override
+    public List<DocumentDto> getAll() {
+        return DocumentDto.from(documentRepository.findAll());
     }
 
     @Override
@@ -49,5 +56,10 @@ public class DocumentServiceImpl implements DocumentService {
         if (documentRepository.existByNumber(number)) {
             throw new RuntimeException("Document with number: " + number + " already exist");
         }
+    }
+
+    @Override
+    public void save(Document document) {
+        documentRepository.save(document);
     }
 }
