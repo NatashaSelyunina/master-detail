@@ -18,6 +18,10 @@ public class Specification {
     @ManyToOne
     private Document document;
 
+    public Specification() {
+
+    }
+
     public String getTitle() {
         return title;
     }

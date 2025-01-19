@@ -4,7 +4,6 @@ import com.example.master_detail.dto.SpecificationDto;
 import com.example.master_detail.entity.Document;
 import com.example.master_detail.entity.Specification;
 import com.example.master_detail.repository.SpecificationRepository;
-import com.example.master_detail.service.DocumentService;
 import com.example.master_detail.service.SpecificationService;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +14,9 @@ import java.util.List;
 public class SpecificationServiceImpl implements SpecificationService {
 
     private final SpecificationRepository specificationRepository;
-    private final DocumentService documentService;
 
-    public SpecificationServiceImpl(SpecificationRepository specificationRepository, DocumentService documentService) {
+    public SpecificationServiceImpl(SpecificationRepository specificationRepository) {
         this.specificationRepository = specificationRepository;
-        this.documentService = documentService;
     }
 
     @Override

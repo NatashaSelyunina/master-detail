@@ -33,6 +33,7 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
         document.setNumber(documentDto.getNumber().trim().toLowerCase());
         document.setDate(documentDto.getDate());
         document.setNote(documentDto.getNote().toLowerCase());
+        documentService.save(document);
 
         List<Specification> specifications = specificationService.save(documentDto.getSpecifications(), document);
         BigDecimal documentSum = specifications.stream()
