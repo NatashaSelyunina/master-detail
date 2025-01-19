@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface DocumentService {
 
-    DocumentDto createDocument(DocumentDto documentDto);
-
     Document getById(Long id);
 
     List<DocumentDto> getAll();
 
     void save(Document document);
+
+    void isExistsByNumber(String number);
 }
