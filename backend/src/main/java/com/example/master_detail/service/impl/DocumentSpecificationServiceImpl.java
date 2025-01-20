@@ -7,6 +7,7 @@ import com.example.master_detail.entity.Specification;
 import com.example.master_detail.service.DocumentService;
 import com.example.master_detail.service.DocumentSpecificationService;
 import com.example.master_detail.service.SpecificationService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,23 +26,31 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
     }
 
     @Override
+    @Transactional
     public DocumentDto createDocument(DocumentDto documentDto) {
         String number = documentDto.getNumber().trim().toLowerCase();
         documentService.isExistsByNumber(number);
 
         Document document = new Document();
-        document.setNumber(documentDto.getNumber().trim().toLowerCase());
+        document.setNumber(number);
         document.setDate(documentDto.getDate());
-        document.setNote(documentDto.getNote().toLowerCase());
+        if (documentDto.getNote() != null) {
+            document.setNote(documentDto.getNote().trim().toLowerCase());
+        }
         documentService.save(document);
 
-        List<Specification> specifications = specificationService.save(documentDto.getSpecifications(), document);
-        BigDecimal documentSum = specifications.stream()
-                .map(Specification::getSum)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        document.setSum(documentSum);
-
+        if (documentDto.getSpecifications() != null) {
+            List<Specification> specifications = specificationService.save(documentDto.getSpecifications(), document);
+            BigDecimal documentSum = specifications.stream()
+                    .map(Specification::getSum)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            document.setSpecifications(specifications);
+            document.setSum(documentSum);
+        } else {
+            document.setSum(BigDecimal.ZERO);
+        }
         documentService.save(document);
+
         return DocumentDto.from(document);
     }
 

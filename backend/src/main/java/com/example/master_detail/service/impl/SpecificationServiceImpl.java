@@ -8,6 +8,7 @@ import com.example.master_detail.service.SpecificationService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,16 +22,24 @@ public class SpecificationServiceImpl implements SpecificationService {
 
     @Override
     public List<Specification> save(List<SpecificationDto> specificationDtos, Document document) {
-        List<Specification> specifications = SpecificationDto.to(specificationDtos);
-
-        for (Specification specification : specifications) {
-            Specification savedSpecification = new Specification();
-            savedSpecification.setTitle(specification.getTitle().trim().toLowerCase());
-            savedSpecification.setSum(specification.getSum());
-            savedSpecification.setDocument(document);
-            specificationRepository.save(savedSpecification);
+        if (checkDuplicateTitle(specificationDtos)) {
+            throw new RuntimeException(
+                    "Check the specifications, you are trying to add different specifications with the same name");
         }
-        return specifications;
+        List<Specification> specifications = new ArrayList<>();
+
+        for (SpecificationDto specificationDto : specificationDtos) {
+            if (specificationDto.getTitle() == null || specificationDto.getTitle().isEmpty()) {
+                throw new RuntimeException("The specification must have a name");
+            }
+
+            Specification savedSpecification = new Specification();
+            savedSpecification.setTitle(specificationDto.getTitle().trim().toLowerCase());
+            savedSpecification.setSum(specificationDto.getSum());
+            savedSpecification.setDocument(document);
+            specifications.add(savedSpecification);
+        }
+        return specificationRepository.saveAll(specifications);
     }
 
     @Override
@@ -59,5 +68,12 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public void delete(Specification specification) {
         specificationRepository.delete(specification);
+    }
+
+    public boolean checkDuplicateTitle(List<SpecificationDto> specificationDtos) {
+        return specificationDtos.stream()
+                .map(SpecificationDto::getTitle)
+                .distinct()
+                .count() != specificationDtos.size();
     }
 }

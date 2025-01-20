@@ -18,7 +18,6 @@ public class DocumentDto {
     @NotNull
     private LocalDate date;
 
-    @Min(value = 0)
     private BigDecimal sum;
 
     private String note;

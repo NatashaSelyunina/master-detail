@@ -4,6 +4,7 @@ import com.example.master_detail.dto.DocumentDto;
 import com.example.master_detail.entity.Document;
 import com.example.master_detail.repository.DocumentRepository;
 import com.example.master_detail.service.DocumentService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

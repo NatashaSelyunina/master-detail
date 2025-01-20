@@ -2,6 +2,7 @@ package com.example.master_detail.controller;
 
 import com.example.master_detail.dto.DocumentDto;
 import com.example.master_detail.service.DocumentService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class DocumentController {
     }
 
     @PutMapping
-    public DocumentDto updateDocument(@RequestBody DocumentDto documentDto) {
+    public DocumentDto updateDocument(@Valid @RequestBody DocumentDto documentDto) {
         return documentService.updateDocument(documentDto);
     }
 
