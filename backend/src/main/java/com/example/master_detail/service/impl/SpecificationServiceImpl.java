@@ -24,8 +24,9 @@ public class SpecificationServiceImpl implements SpecificationService {
         List<Specification> specifications = SpecificationDto.to(specificationDtos);
 
         for (Specification specification : specifications) {
-            Specification savedSpecification =
-                    new Specification(specification.getTitle().trim().toLowerCase(), specification.getSum());
+            Specification savedSpecification = new Specification();
+            savedSpecification.setTitle(specification.getTitle().trim().toLowerCase());
+            savedSpecification.setSum(specification.getSum());
             savedSpecification.setDocument(document);
             specificationRepository.save(savedSpecification);
         }
@@ -47,5 +48,16 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public BigDecimal getTotalSumByDocumentId(Long documentId) {
         return specificationRepository.getTotalSumByDocumentId(documentId);
+    }
+
+    @Override
+    public Specification getById(Long id) {
+        return specificationRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Specification with id: " + id + " not found"));
+    }
+
+    @Override
+    public void delete(Specification specification) {
+        specificationRepository.delete(specification);
     }
 }

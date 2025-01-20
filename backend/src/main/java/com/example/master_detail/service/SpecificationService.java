@@ -16,4 +16,8 @@ public interface SpecificationService {
     void isExistTitleByDocumentId(String title, Long documentId);
 
     BigDecimal getTotalSumByDocumentId(Long documentId);
+
+    Specification getById(Long id);
+
+    void delete(Specification specification);
 }

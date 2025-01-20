@@ -20,4 +20,14 @@ public class DocumentController {
     public List<DocumentDto> getAllDocuments() {
         return documentService.getAll();
     }
+
+    @PutMapping
+    public DocumentDto updateDocument(@RequestBody DocumentDto documentDto) {
+        return documentService.updateDocument(documentDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteDocument(@PathVariable("id") Long id) {
+        documentService.delete(id);
+    }
 }

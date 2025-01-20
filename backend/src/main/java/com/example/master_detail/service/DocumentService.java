@@ -14,4 +14,8 @@ public interface DocumentService {
     void save(Document document);
 
     void isExistsByNumber(String number);
+
+    void delete(Long id);
+
+    DocumentDto updateDocument(DocumentDto documentDto);
 }

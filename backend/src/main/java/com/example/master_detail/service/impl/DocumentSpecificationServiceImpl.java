@@ -52,12 +52,43 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
         String title = specificationDto.getTitle().trim().toLowerCase();
         specificationService.isExistTitleByDocumentId(title, documentId);
 
-        Specification specification = new Specification(title, specificationDto.getSum());
+        Specification specification = new Specification();
+        specification.setSum(specificationDto.getSum());
+        specification.setTitle(title);
         specification.setDocument(document);
         specificationService.save(specification);
 
         BigDecimal documentSum = specificationService.getTotalSumByDocumentId(documentId);
-        document.setSum(documentSum.add(specification.getSum()));
+        document.setSum(documentSum);
+        documentService.save(document);
+
+        return SpecificationDto.from(specification);
+    }
+
+    @Override
+    public void deleteSpecification(Long id) {
+        Specification specification = specificationService.getById(id);
+        Document document = specification.getDocument();
+        documentService.getById(document.getId());
+        specificationService.delete(specification);
+
+        BigDecimal documentSum = specificationService.getTotalSumByDocumentId(document.getId());
+        document.setSum(documentSum);
+        documentService.save(document);
+    }
+
+    @Override
+    public SpecificationDto updateSpecification(SpecificationDto specificationDto) {
+        Specification specification = specificationService.getById(specificationDto.getId());
+        Document document = specification.getDocument();
+        documentService.getById(document.getId());
+
+        specification.setTitle(specificationDto.getTitle().trim().toLowerCase());
+        specification.setSum(specificationDto.getSum());
+        specificationService.save(specification);
+
+        BigDecimal documentSum = specificationService.getTotalSumByDocumentId(document.getId());
+        document.setSum(documentSum);
         documentService.save(document);
 
         return SpecificationDto.from(specification);

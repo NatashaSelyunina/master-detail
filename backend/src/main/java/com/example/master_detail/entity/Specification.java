@@ -22,6 +22,21 @@ public class Specification {
 
     }
 
+
+    public Specification(Long id, String title, BigDecimal sum) {
+        this.id = id;
+        this.title = title;
+        this.sum = sum;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -44,10 +59,5 @@ public class Specification {
 
     public void setDocument(Document document) {
         this.document = document;
-    }
-
-    public Specification(String title, BigDecimal sum) {
-        this.title = title;
-        this.sum = sum;
     }
 }

@@ -36,6 +36,24 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public void delete(Long id) {
+        getById(id);
+        documentRepository.deleteById(id);
+    }
+
+    @Override
+    public DocumentDto updateDocument(DocumentDto documentDto) {
+        Document document = getById(documentDto.getId());
+        document.setNumber(documentDto.getNumber().trim().toLowerCase());
+        document.setDate(documentDto.getDate());
+        if (documentDto.getNote() != null) {
+            document.setNote(documentDto.getNote().trim().toLowerCase());
+        }
+        documentRepository.save(document);
+        return DocumentDto.from(documentRepository.save(document));
+    }
+
+    @Override
     public void save(Document document) {
         documentRepository.save(document);
     }

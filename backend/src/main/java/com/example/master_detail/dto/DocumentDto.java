@@ -1,6 +1,8 @@
 package com.example.master_detail.dto;
 
 import com.example.master_detail.entity.Document;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,12 +12,13 @@ public class DocumentDto {
 
     private Long id;
 
-    @NotNull
+    @NotBlank
     private String number;
 
     @NotNull
     private LocalDate date;
 
+    @Min(value = 0)
     private BigDecimal sum;
 
     private String note;
@@ -30,6 +33,14 @@ public class DocumentDto {
         this.sum = sum;
         this.note = note;
         this.specifications = specifications;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public @NotNull String getNumber() {

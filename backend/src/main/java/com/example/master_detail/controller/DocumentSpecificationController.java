@@ -6,7 +6,7 @@ import com.example.master_detail.service.DocumentSpecificationService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/specification")
+@RequestMapping("/api/docs")
 public class DocumentSpecificationController {
 
     private final DocumentSpecificationService documentSpecificationService;
@@ -15,13 +15,23 @@ public class DocumentSpecificationController {
         this.documentSpecificationService = documentSpecificationService;
     }
 
-    @PostMapping
+    @PostMapping("/document")
     public DocumentDto createDocument(@RequestBody DocumentDto documentDto) {
         return documentSpecificationService.createDocument(documentDto);
     }
 
-    @PostMapping("/{document-id}")
-    SpecificationDto add(@RequestBody SpecificationDto specificationDto, @PathVariable("document-id") Long documentId) {
+    @PostMapping("/specification/{document-id}")
+    SpecificationDto addSpecification(@RequestBody SpecificationDto specificationDto, @PathVariable("document-id") Long documentId) {
         return documentSpecificationService.addSpecification(specificationDto, documentId);
+    }
+
+    @PutMapping("/specification")
+    SpecificationDto updateSpecification(@RequestBody SpecificationDto specificationDto) {
+        return documentSpecificationService.updateSpecification(specificationDto);
+    }
+
+    @DeleteMapping("/specification/{id}")
+    void deleteSpecification(@PathVariable("id") Long specificationId) {
+        documentSpecificationService.deleteSpecification(specificationId);
     }
 }
