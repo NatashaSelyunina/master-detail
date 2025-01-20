@@ -5,13 +5,12 @@ import { getDocuments, createDocument, updateDocument, deleteDocument, createSpe
 const DocumentList = () => {
     const queryClient = useQueryClient();
 
-    // Исправленный useQuery
     const { data: documents, isLoading, error } = useQuery({
         queryKey: ['documents'],
-        queryFn: getDocuments, // Передаем функцию, а не результат вызова
+        queryFn: getDocuments,
     });
 
-    const [newDocument, setNewDocument] = useState({ number: '', totalAmount: '' });
+    const [newDocument, setNewDocument] = useState({ number: '', totalAmount: '', date: '', note: '' });
     const [newSpecification, setNewSpecification] = useState({ documentId: '', title: '', sum: '' });
     const [editingDocument, setEditingDocument] = useState(null);
     const [editingSpecification, setEditingSpecification] = useState(null);
@@ -60,7 +59,7 @@ const DocumentList = () => {
 
     const handleAddDocument = () => {
         createDocumentMutation.mutate(newDocument);
-        setNewDocument({ number: '', totalAmount: '' });
+        setNewDocument({ number: '', totalAmount: '', date: '', note: '' });
     };
 
     const handleEditDocument = (document) => {
@@ -105,6 +104,8 @@ const DocumentList = () => {
                     <tr>
                         <th>Номер документа</th>
                         <th>Общая сумма</th>
+                        <th>Дата</th>
+                        <th>Примечания</th>
                         <th>Действия</th>
                     </tr>
                 </thead>
@@ -135,6 +136,28 @@ const DocumentList = () => {
                             </td>
                             <td>
                                 {editingDocument?.id === document.id ? (
+                                    <input
+                                        type="date"
+                                        value={editingDocument.date}
+                                        onChange={(e) => setEditingDocument({ ...editingDocument, date: e.target.value })}
+                                    />
+                                ) : (
+                                    document.date
+                                )}
+                            </td>
+                            <td>
+                                {editingDocument?.id === document.id ? (
+                                    <input
+                                        type="text"
+                                        value={editingDocument.note}
+                                        onChange={(e) => setEditingDocument({ ...editingDocument, note: e.target.value })}
+                                    />
+                                ) : (
+                                    document.note
+                                )}
+                            </td>
+                            <td>
+                                {editingDocument?.id === document.id ? (
                                     <button onClick={handleUpdateDocument}>Сохранить</button>
                                 ) : (
                                     <button onClick={() => handleEditDocument(document)}>Изменить</button>
@@ -149,7 +172,7 @@ const DocumentList = () => {
                 </tbody>
             </table>
             <div>
-                <input
+            <input
                     type="text"
                     placeholder="Номер документа"
                     value={newDocument.number}
@@ -160,6 +183,18 @@ const DocumentList = () => {
                     placeholder="Общая сумма"
                     value={newDocument.totalAmount}
                     onChange={(e) => setNewDocument({ ...newDocument, totalAmount: e.target.value })}
+                />
+                <input
+                    type="date"
+                    placeholder="Дата"
+                    value={newDocument.date}
+                    onChange={(e) => setNewDocument({ ...newDocument, date: e.target.value })}
+                />
+                <input
+                    type="text"
+                    placeholder="Примечания"
+                    value={newDocument.note}
+                    onChange={(e) => setNewDocument({ ...newDocument, note: e.target.value })}
                 />
                 <button onClick={handleAddDocument}>Добавить документ</button>
             </div>
