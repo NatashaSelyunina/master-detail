@@ -4,7 +4,7 @@ import com.example.master_detail.dto.DocumentDto;
 import com.example.master_detail.entity.Document;
 import com.example.master_detail.repository.DocumentRepository;
 import com.example.master_detail.service.DocumentService;
-import jakarta.transaction.Transactional;
+import com.example.master_detail.service.ErrorService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,8 +14,11 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
 
-    public DocumentServiceImpl(DocumentRepository documentRepository) {
+    private final ErrorService errorService;
+
+    public DocumentServiceImpl(DocumentRepository documentRepository, ErrorService errorService) {
         this.documentRepository = documentRepository;
+        this.errorService = errorService;
     }
 
     @Override
@@ -32,6 +35,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public void isExistsByNumber(String number) {
         if (documentRepository.existsByNumber(number)) {
+            errorService.save("Document with number: " + number + " already exist");
             throw new RuntimeException("Document with number: " + number + " already exist");
         }
     }
@@ -45,7 +49,12 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDto updateDocument(DocumentDto documentDto) {
         Document document = getById(documentDto.getId());
-        document.setNumber(documentDto.getNumber().trim().toLowerCase());
+
+        String number = documentDto.getNumber().trim().toLowerCase();
+        if (!number.equals(document.getNumber())) {
+            isExistsByNumber(number);
+            document.setNumber(number);
+        }
         document.setDate(documentDto.getDate());
         if (documentDto.getNote() != null) {
             document.setNote(documentDto.getNote().trim().toLowerCase());

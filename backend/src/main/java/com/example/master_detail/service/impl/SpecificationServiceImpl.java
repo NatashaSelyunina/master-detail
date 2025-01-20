@@ -4,6 +4,7 @@ import com.example.master_detail.dto.SpecificationDto;
 import com.example.master_detail.entity.Document;
 import com.example.master_detail.entity.Specification;
 import com.example.master_detail.repository.SpecificationRepository;
+import com.example.master_detail.service.ErrorService;
 import com.example.master_detail.service.SpecificationService;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,18 @@ public class SpecificationServiceImpl implements SpecificationService {
 
     private final SpecificationRepository specificationRepository;
 
-    public SpecificationServiceImpl(SpecificationRepository specificationRepository) {
+    private final ErrorService errorService;
+
+    public SpecificationServiceImpl(SpecificationRepository specificationRepository, ErrorService errorService) {
         this.specificationRepository = specificationRepository;
+        this.errorService = errorService;
     }
 
     @Override
     public List<Specification> save(List<SpecificationDto> specificationDtos, Document document) {
         if (checkDuplicateTitle(specificationDtos)) {
+            errorService.save(
+                    "Check the specifications, you are trying to add different specifications with the same name");
             throw new RuntimeException(
                     "Check the specifications, you are trying to add different specifications with the same name");
         }
@@ -50,6 +56,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public void isExistTitleByDocumentId(String title, Long documentId) {
         if (specificationRepository.existsSpecificationTitleByDocumentId(documentId, title)) {
+            errorService.save("The document already has a specification with a name: " + title);
             throw new RuntimeException("The document already has a specification with a name: " + title);
         }
     }

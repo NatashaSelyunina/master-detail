@@ -55,6 +55,7 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
     }
 
     @Override
+    @Transactional
     public SpecificationDto addSpecification(SpecificationDto specificationDto, Long documentId) {
         Document document = documentService.getById(documentId);
 
@@ -75,6 +76,7 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
     }
 
     @Override
+    @Transactional
     public void deleteSpecification(Long id) {
         Specification specification = specificationService.getById(id);
         Document document = specification.getDocument();
@@ -87,12 +89,18 @@ public class DocumentSpecificationServiceImpl implements DocumentSpecificationSe
     }
 
     @Override
+    @Transactional
     public SpecificationDto updateSpecification(SpecificationDto specificationDto) {
         Specification specification = specificationService.getById(specificationDto.getId());
         Document document = specification.getDocument();
         documentService.getById(document.getId());
 
-        specification.setTitle(specificationDto.getTitle().trim().toLowerCase());
+        String title = specificationDto.getTitle().trim().toLowerCase();
+        if (!title.equals(specification.getTitle())) {
+            specificationService.isExistTitleByDocumentId(title, document.getId());
+            specification.setTitle(title);
+        }
+
         specification.setSum(specificationDto.getSum());
         specificationService.save(specification);
 

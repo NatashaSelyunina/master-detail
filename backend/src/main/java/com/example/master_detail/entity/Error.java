@@ -18,6 +18,22 @@ public class Error {
 
     private String message;
 
+    public Error() {
+    }
+
+    public Error(LocalDate date, String message) {
+        this.date = date;
+        this.message = message;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public LocalDate getDate() {
         return date;
     }
