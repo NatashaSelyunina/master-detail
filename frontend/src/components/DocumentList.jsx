@@ -1,48 +1,60 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import api from '../services/api';
+import { getDocuments, createDocument, updateDocument, deleteDocument, createSpecification, updateSpecification, deleteSpecification } from '../services/api';
 
 const DocumentList = () => {
     const queryClient = useQueryClient();
-    const { data: documents, isLoading, error } = useQuery(['documents'], api.getDocuments);
+
+    // Исправленный useQuery
+    const { data: documents, isLoading, error } = useQuery({
+        queryKey: ['documents'],
+        queryFn: getDocuments, // Передаем функцию, а не результат вызова
+    });
+
     const [newDocument, setNewDocument] = useState({ number: '', totalAmount: '' });
     const [newSpecification, setNewSpecification] = useState({ documentId: '', title: '', sum: '' });
     const [editingDocument, setEditingDocument] = useState(null);
     const [editingSpecification, setEditingSpecification] = useState(null);
 
-    const createDocumentMutation = useMutation(api.createDocument, {
+    const createDocumentMutation = useMutation({
+        mutationFn: createDocument,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
-    const updateDocumentMutation = useMutation(api.updateDocument, {
+    const updateDocumentMutation = useMutation({
+        mutationFn: updateDocument,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
-    const deleteDocumentMutation = useMutation(api.deleteDocument, {
+    const deleteDocumentMutation = useMutation({
+        mutationFn: deleteDocument,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
-    const createSpecificationMutation = useMutation(api.createSpecification, {
+    const createSpecificationMutation = useMutation({
+        mutationFn: createSpecification,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
-    const updateSpecificationMutation = useMutation(api.updateSpecification, {
+    const updateSpecificationMutation = useMutation({
+        mutationFn: updateSpecification,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
-    const deleteSpecificationMutation = useMutation(api.deleteSpecification, {
+    const deleteSpecificationMutation = useMutation({
+        mutationFn: deleteSpecification,
         onSuccess: () => {
-            queryClient.invalidateQueries(['documents']);
+            queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
     });
 
@@ -97,7 +109,7 @@ const DocumentList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {documents.map(document => (
+                    {documents?.map(document => (
                         <tr key={document.id}>
                             <td>
                                 {editingDocument?.id === document.id ? (

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/docs")
+@CrossOrigin(origins = "http://localhost:3000")
 public class DocumentSpecificationController {
 
     private final DocumentSpecificationService documentSpecificationService;
