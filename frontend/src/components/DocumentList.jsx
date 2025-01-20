@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getDocuments, createDocument, updateDocument, deleteDocument, createSpecification, updateSpecification, deleteSpecification } from '../services/api';
-
 const DocumentList = () => {
     const queryClient = useQueryClient();
 
@@ -10,7 +9,7 @@ const DocumentList = () => {
         queryFn: getDocuments,
     });
 
-    const [newDocument, setNewDocument] = useState({ number: '', totalAmount: '', date: '', note: '' });
+    const [newDocument, setNewDocument] = useState({ number: '', sum: '', date: '', note: '' });
     const [newSpecification, setNewSpecification] = useState({ documentId: '', title: '', sum: '' });
     const [editingDocument, setEditingDocument] = useState(null);
     const [editingSpecification, setEditingSpecification] = useState(null);
@@ -59,7 +58,7 @@ const DocumentList = () => {
 
     const handleAddDocument = () => {
         createDocumentMutation.mutate(newDocument);
-        setNewDocument({ number: '', totalAmount: '', date: '', note: '' });
+        setNewDocument({ number: '', sum: '', date: '', note: '' });
     };
 
     const handleEditDocument = (document) => {
@@ -98,21 +97,22 @@ const DocumentList = () => {
 
     return (
         <div>
-            <h1>Documents</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Номер документа</th>
-                        <th>Общая сумма</th>
-                        <th>Дата</th>
-                        <th>Примечания</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {documents?.map(document => (
-                        <tr key={document.id}>
-                            <td>
+        <h1>Documents</h1>
+        <table style={{ borderCollapse: 'collapse', width: '100%', border: '1px solid black' }}>
+            <thead>
+                <tr>
+                    <th style={{ border: '1px solid black', padding: '8px' }}>Номер документа</th>
+                    <th style={{ border: '1px solid black', padding: '8px' }}>Общая сумма</th>
+                    <th style={{ border: '1px solid black', padding: '8px' }}>Дата</th>
+                    <th style={{ border: '1px solid black', padding: '8px' }}>Примечания</th>
+                    <th style={{ border: '1px solid black', padding: '8px' }}>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {documents?.map(document => (
+                    <React.Fragment key={document.id}>
+                        <tr style={{ border: '1px solid black' }}>
+                            <td style={{ border: '1px solid black', padding: '8px' }}>
                                 {editingDocument?.id === document.id ? (
                                     <input
                                         type="text"
@@ -123,18 +123,18 @@ const DocumentList = () => {
                                     document.number
                                 )}
                             </td>
-                            <td>
+                            <td style={{ border: '1px solid black', padding: '8px' }}>
                                 {editingDocument?.id === document.id ? (
                                     <input
                                         type="text"
-                                        value={editingDocument.totalAmount}
-                                        onChange={(e) => setEditingDocument({ ...editingDocument, totalAmount: e.target.value })}
+                                        value={editingDocument.sum}
+                                        onChange={(e) => setEditingDocument({ ...editingDocument, sum: e.target.value })}
                                     />
                                 ) : (
-                                    document.totalAmount
+                                    document.sum
                                 )}
                             </td>
-                            <td>
+                            <td style={{ border: '1px solid black', padding: '8px' }}>
                                 {editingDocument?.id === document.id ? (
                                     <input
                                         type="date"
@@ -145,7 +145,7 @@ const DocumentList = () => {
                                     document.date
                                 )}
                             </td>
-                            <td>
+                            <td style={{ border: '1px solid black', padding: '8px' }}>
                                 {editingDocument?.id === document.id ? (
                                     <input
                                         type="text"
@@ -156,7 +156,7 @@ const DocumentList = () => {
                                     document.note
                                 )}
                             </td>
-                            <td>
+                            <td style={{ border: '1px solid black', padding: '8px' }}>
                                 {editingDocument?.id === document.id ? (
                                     <button onClick={handleUpdateDocument}>Сохранить</button>
                                 ) : (
@@ -168,9 +168,61 @@ const DocumentList = () => {
                                 </button>
                             </td>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                        {document.specifications?.length > 0 && (
+                            <tr>
+                                <td colSpan="5" style={{ padding: '0' }}>
+                                    <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid black' }}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ border: '1px solid black', padding: '8px' }}>Название спецификации</th>
+                                                <th style={{ border: '1px solid black', padding: '8px' }}>Сумма</th>
+                                                <th style={{ border: '1px solid black', padding: '8px' }}>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {document.specifications.map(specification => (
+                                                <tr key={specification.id} style={{ border: '1px solid black' }}>
+                                                    <td style={{ border: '1px solid black', padding: '8px' }}>
+                                                        {editingSpecification?.id === specification.id ? (
+                                                            <input
+                                                                type="text"
+                                                                value={editingSpecification.title}
+                                                                onChange={(e) => setEditingSpecification({ ...editingSpecification, title: e.target.value })}
+                                                            />
+                                                        ) : (
+                                                            specification.title
+                                                        )}
+                                                    </td>
+                                                    <td style={{ border: '1px solid black', padding: '8px' }}>
+                                                        {editingSpecification?.id === specification.id ? (
+                                                            <input
+                                                                type="text"
+                                                                value={editingSpecification.sum}
+                                                                onChange={(e) => setEditingSpecification({ ...editingSpecification, sum: e.target.value })}
+                                                            />
+                                                        ) : (
+                                                            specification.sum
+                                                        )}
+                                                    </td>
+                                                    <td style={{ border: '1px solid black', padding: '8px' }}>
+                                                        {editingSpecification?.id === specification.id ? (
+                                                            <button onClick={handleUpdateSpecification}>Сохранить</button>
+                                                        ) : (
+                                                            <button onClick={() => handleEditSpecification(specification)}>Изменить</button>
+                                                        )}
+                                                        <button onClick={() => handleDeleteSpecification(specification.id)}>Удалить</button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        )}
+                    </React.Fragment>
+                ))}
+            </tbody>
+        </table>
             <div>
             <input
                     type="text"
@@ -181,8 +233,8 @@ const DocumentList = () => {
                 <input
                     type="text"
                     placeholder="Общая сумма"
-                    value={newDocument.totalAmount}
-                    onChange={(e) => setNewDocument({ ...newDocument, totalAmount: e.target.value })}
+                    value={newDocument.sum}
+                    onChange={(e) => setNewDocument({ ...newDocument, sum: e.target.value })}
                 />
                 <input
                     type="date"
