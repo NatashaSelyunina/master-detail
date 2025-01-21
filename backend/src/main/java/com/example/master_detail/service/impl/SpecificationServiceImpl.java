@@ -3,9 +3,11 @@ package com.example.master_detail.service.impl;
 import com.example.master_detail.dto.SpecificationDto;
 import com.example.master_detail.entity.Document;
 import com.example.master_detail.entity.Specification;
+import com.example.master_detail.exception_handling.IncorrectInformationException;
 import com.example.master_detail.repository.SpecificationRepository;
 import com.example.master_detail.service.ErrorService;
 import com.example.master_detail.service.SpecificationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,14 +31,14 @@ public class SpecificationServiceImpl implements SpecificationService {
         if (checkDuplicateTitle(specificationDtos)) {
             errorService.save(
                     "Check the specifications, you are trying to add different specifications with the same name");
-            throw new RuntimeException(
-                    "Check the specifications, you are trying to add different specifications with the same name");
+            throw new IncorrectInformationException(
+                    "Check the specifications, you are trying to add different specifications with the same name", HttpStatus.BAD_REQUEST);
         }
         List<Specification> specifications = new ArrayList<>();
 
         for (SpecificationDto specificationDto : specificationDtos) {
             if (specificationDto.getTitle() == null || specificationDto.getTitle().isEmpty()) {
-                throw new RuntimeException("The specification must have a name");
+                throw new IncorrectInformationException("The specification must have a name", HttpStatus.BAD_REQUEST);
             }
 
             Specification savedSpecification = new Specification();
@@ -57,7 +59,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     public void isExistTitleByDocumentId(String title, Long documentId) {
         if (specificationRepository.existsSpecificationTitleByDocumentId(documentId, title)) {
             errorService.save("The document already has a specification with a name: " + title);
-            throw new RuntimeException("The document already has a specification with a name: " + title);
+            throw new IncorrectInformationException("The document already has a specification with a name: " + title, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -69,7 +71,7 @@ public class SpecificationServiceImpl implements SpecificationService {
     @Override
     public Specification getById(Long id) {
         return specificationRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Specification with id: " + id + " not found"));
+                () -> new IncorrectInformationException("Specification with id: " + id + " not found", HttpStatus.BAD_REQUEST));
     }
 
     @Override

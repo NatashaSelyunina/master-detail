@@ -2,9 +2,11 @@ package com.example.master_detail.service.impl;
 
 import com.example.master_detail.dto.DocumentDto;
 import com.example.master_detail.entity.Document;
+import com.example.master_detail.exception_handling.IncorrectInformationException;
 import com.example.master_detail.repository.DocumentRepository;
 import com.example.master_detail.service.DocumentService;
 import com.example.master_detail.service.ErrorService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,14 +31,14 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public Document getById(Long id) {
         return documentRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Document with id: " + id + " not found"));
+                () -> new IncorrectInformationException("Document with id: " + id + " not found", HttpStatus.BAD_REQUEST));
     }
 
     @Override
     public void isExistsByNumber(String number) {
         if (documentRepository.existsByNumber(number)) {
             errorService.save("Document with number: " + number + " already exist");
-            throw new RuntimeException("Document with number: " + number + " already exist");
+            throw new IncorrectInformationException("Document with number: " + number + " already exist", HttpStatus.BAD_REQUEST);
         }
     }
 
