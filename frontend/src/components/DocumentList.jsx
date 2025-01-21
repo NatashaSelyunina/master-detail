@@ -10,8 +10,39 @@ import {
     deleteSpecification,
 } from '../services/api';
 
+const ErrorNotification = ({ message, onClose }) => (
+    <div style={{
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      padding: '15px',
+      backgroundColor: '#ff4444',
+      color: 'white',
+      borderRadius: '5px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      zIndex: 1000
+    }}>
+      <span>{message}</span>
+      <button 
+        onClick={onClose}
+        style={{
+          background: 'none',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          fontSize: '16px'
+        }}
+      >
+        ×
+      </button>
+    </div>
+  );
+
 const DocumentList = () => {
     const queryClient = useQueryClient();
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const { data: documents, isLoading, error } = useQuery({
         queryKey: ['documents'],
@@ -26,11 +57,18 @@ const DocumentList = () => {
     const [editingSpecification, setEditingSpecification] = useState(null);
     const [addingSpecificationForDocumentId, setAddingSpecificationForDocumentId] = useState(null);
 
+    const handleMutationError = (error) => {
+        const message = error.response?.data?.message || 'Произошла ошибка';
+        setErrorMessage(message);
+        setTimeout(() => setErrorMessage(null), 10000)
+      };
+
     const createDocumentMutation = useMutation({
         mutationFn: createDocument,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const updateDocumentMutation = useMutation({
@@ -38,6 +76,7 @@ const DocumentList = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const deleteDocumentMutation = useMutation({
@@ -45,6 +84,7 @@ const DocumentList = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const createSpecificationMutation = useMutation({
@@ -52,6 +92,7 @@ const DocumentList = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const updateSpecificationMutation = useMutation({
@@ -59,6 +100,7 @@ const DocumentList = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const deleteSpecificationMutation = useMutation({
@@ -66,6 +108,7 @@ const DocumentList = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['documents'] });
         },
+        onError: handleMutationError
     });
 
     const handleAddDocumentWithSpecifications = () => {
@@ -118,10 +161,7 @@ const DocumentList = () => {
                     setNewSpecification({ title: '', sum: '' });
                     setAddingSpecificationForDocumentId(null);
                 },
-                onError: (error) => {
-                    console.error('Ошибка при добавлении спецификации:', error);
-                    alert('Произошла ошибка при добавлении спецификации.');
-                },
+                onError: handleMutationError
             }
         );
     };
@@ -144,6 +184,12 @@ const DocumentList = () => {
 
     return (
         <div>
+            {errorMessage && (
+                <ErrorNotification 
+                    message={errorMessage} 
+                    onClose={() => setErrorMessage(null)} 
+                />
+            )}
             <h1>Documents</h1>
             <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', marginBottom: '20px', backgroundColor: '#f9f9f9' }}>
                 <h2 style={{ marginTop: 0 }}>Форма добавления документа</h2>
