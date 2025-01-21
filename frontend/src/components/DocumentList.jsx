@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getDocuments, createDocument, updateDocument, deleteDocument, createSpecification, updateSpecification, deleteSpecification } from '../services/api';
+import {
+    getDocuments,
+    createDocument,
+    updateDocument,
+    deleteDocument,
+    createSpecification,
+    updateSpecification,
+    deleteSpecification,
+} from '../services/api';
 
 const DocumentList = () => {
     const queryClient = useQueryClient();
@@ -9,12 +17,14 @@ const DocumentList = () => {
         queryKey: ['documents'],
         queryFn: getDocuments,
     });
+    console.log(documents);
 
     const [newDocument, setNewDocument] = useState({ number: '', sum: '', date: '', note: '' });
     const [newDocumentSpecifications, setNewDocumentSpecifications] = useState([]);
     const [newSpecification, setNewSpecification] = useState({ title: '', sum: '' });
     const [editingDocument, setEditingDocument] = useState(null);
     const [editingSpecification, setEditingSpecification] = useState(null);
+    const [addingSpecificationForDocumentId, setAddingSpecificationForDocumentId] = useState(null);
 
     const createDocumentMutation = useMutation({
         mutationFn: createDocument,
@@ -91,9 +101,29 @@ const DocumentList = () => {
         deleteDocumentMutation.mutate(id);
     };
 
-    const handleAddSpecification = (documentId) => {
-        createSpecificationMutation.mutate({ ...newSpecification, documentId });
-        setNewSpecification({ documentId: '', title: '', sum: '' });
+    const handleSaveSpecification = (documentId) => {
+        console.log('Document ID:', documentId);
+        const id = Number(documentId);
+    
+        if (isNaN(id)) {
+            console.error('Invalid documentId:', documentId);
+            return;
+        }
+    
+        console.log('Data before mutation:', { ...newSpecification, documentId: id });
+        createSpecificationMutation.mutate(
+            { ...newSpecification, documentId: id },
+            {
+                onSuccess: () => {
+                    setNewSpecification({ title: '', sum: '' });
+                    setAddingSpecificationForDocumentId(null);
+                },
+                onError: (error) => {
+                    console.error('Ошибка при добавлении спецификации:', error);
+                    alert('Произошла ошибка при добавлении спецификации.');
+                },
+            }
+        );
     };
 
     const handleEditSpecification = (specification) => {
@@ -115,61 +145,76 @@ const DocumentList = () => {
     return (
         <div>
             <h1>Documents</h1>
-            <div>
-                <h2>Добавить новый документ</h2>
+            <div style={{ border: '1px solid #ccc', borderRadius: '8px', padding: '16px', marginBottom: '20px', backgroundColor: '#f9f9f9' }}>
+                <h2 style={{ marginTop: 0 }}>Форма добавления документа</h2>
                 <div>
-                    <input
-                        type="text"
-                        placeholder="Номер документа"
-                        value={newDocument.number}
-                        onChange={(e) => setNewDocument({ ...newDocument, number: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Общая сумма"
-                        value={newDocument.sum}
-                        onChange={(e) => setNewDocument({ ...newDocument, sum: e.target.value })}
-                    />
-                    <input
-                        type="date"
-                        placeholder="Дата"
-                        value={newDocument.date}
-                        onChange={(e) => setNewDocument({ ...newDocument, date: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Примечания"
-                        value={newDocument.note}
-                        onChange={(e) => setNewDocument({ ...newDocument, note: e.target.value })}
-                    />
+                    <h3>Данные документа</h3>
+                    <div style={{ marginBottom: '16px' }}>
+                        <input
+                            type="text"
+                            placeholder="Номер документа"
+                            value={newDocument.number}
+                            onChange={(e) => setNewDocument({ ...newDocument, number: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Общая сумма"
+                            value={newDocument.sum}
+                            onChange={(e) => setNewDocument({ ...newDocument, sum: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                        />
+                        <input
+                            type="date"
+                            placeholder="Дата"
+                            value={newDocument.date}
+                            onChange={(e) => setNewDocument({ ...newDocument, date: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px' }}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Примечания"
+                            value={newDocument.note}
+                            onChange={(e) => setNewDocument({ ...newDocument, note: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                        />
+                    </div>
                 </div>
                 <div>
-                    <h3>Добавить спецификации к документу</h3>
-                    <input
-                        type="text"
-                        placeholder="Название спецификации"
-                        value={newSpecification.title}
-                        onChange={(e) => setNewSpecification({ ...newSpecification, title: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Сумма"
-                        value={newSpecification.sum}
-                        onChange={(e) => setNewSpecification({ ...newSpecification, sum: e.target.value })}
-                    />
-                    <button onClick={handleAddSpecificationToNewDocument}>Добавить спецификацию</button>
+                    <h3>Спецификации документа</h3>
+                    <div style={{ marginBottom: '16px' }}>
+                        <input
+                            type="text"
+                            placeholder="Название спецификации"
+                            value={newSpecification.title}
+                            onChange={(e) => setNewSpecification({ ...newSpecification, title: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Сумма"
+                            value={newSpecification.sum}
+                            onChange={(e) => setNewSpecification({ ...newSpecification, sum: e.target.value })}
+                            style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                        />
+                        <button onClick={handleAddSpecificationToNewDocument} style={{ padding: '8px 16px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px' }}>
+                            Добавить спецификацию
+                        </button>
+                    </div>
+                    <div>
+                        <h4>Список спецификаций</h4>
+                        <ul style={{ listStyleType: 'none', padding: 0 }}>
+                            {newDocumentSpecifications.map((spec, index) => (
+                                <li key={index} style={{ marginBottom: '8px' }}>
+                                    {spec.title} - {spec.sum}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
-                <div>
-                    <h3>Список спецификаций</h3>
-                    <ul>
-                        {newDocumentSpecifications.map((spec, index) => (
-                            <li key={index}>
-                                {spec.title} - {spec.sum}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-                <button onClick={handleAddDocumentWithSpecifications}>Сохранить документ с спецификациями</button>
+                <button onClick={handleAddDocumentWithSpecifications} style={{ padding: '8px 16px', backgroundColor: '#28a745', color: '#fff', border: 'none', borderRadius: '4px' }}>
+                    Сохранить документ со спецификациями
+                </button>
             </div>
             <table style={{ borderCollapse: 'collapse', width: '100%', border: '1px solid black', marginTop: '20px' }}>
                 <thead>
@@ -182,7 +227,7 @@ const DocumentList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {documents?.map(document => (
+                    {documents?.map((document) => (
                         <React.Fragment key={document.id}>
                             <tr>
                                 <td colSpan="5" style={{ border: '1px solid black', padding: '8px', backgroundColor: '#f0f0f0' }}>
@@ -241,11 +286,34 @@ const DocumentList = () => {
                                         <button onClick={() => handleEditDocument(document)}>Изменить</button>
                                     )}
                                     <button onClick={() => handleDeleteDocument(document.id)}>Удалить</button>
-                                    <button onClick={() => setNewSpecification({ ...newSpecification, documentId: document.id })}>
-                                        Добавить спецификацию
-                                    </button>
                                 </td>
                             </tr>
+                            {addingSpecificationForDocumentId === document.id && (
+                                <tr>
+                                    <td colSpan="5" style={{ padding: '16px', backgroundColor: '#f9f9f9' }}>
+                                        <div>
+                                            <h4>Добавить спецификацию</h4>
+                                                <input
+                                                    type="text"
+                                                    placeholder="Название спецификации"
+                                                    value={newSpecification.title}
+                                                    onChange={(e) => setNewSpecification({ ...newSpecification, title: e.target.value })}
+                                                    style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Сумма"
+                                                    value={newSpecification.sum}
+                                                    onChange={(e) => setNewSpecification({ ...newSpecification, sum: e.target.value })}
+                                                    style={{ marginRight: '8px', padding: '8px', width: '200px' }}
+                                                />
+                                                <button onClick={() => handleSaveSpecification(document.id)} style={{ padding: '8px 16px', backgroundColor: '#007bff', color: '#fff', border: 'none', borderRadius: '4px' }}>
+                                                    Сохранить спецификацию
+                                                </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
                             {document.specifications?.length > 0 && (
                                 <tr>
                                     <td colSpan="5" style={{ padding: '0' }}>
@@ -258,7 +326,7 @@ const DocumentList = () => {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {document.specifications.map(specification => (
+                                                {document.specifications.map((specification) => (
                                                     <tr key={specification.id} style={{ border: '1px solid black' }}>
                                                         <td style={{ border: '1px solid black', padding: '8px' }}>
                                                             {editingSpecification?.id === specification.id ? (

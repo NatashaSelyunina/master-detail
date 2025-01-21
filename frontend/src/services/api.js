@@ -15,7 +15,12 @@ export const createDocument = async (document) => {
 };
 
 export const createSpecification = async (specification, id) => {
-    const response = await api.post(`/docs/specification/${id}`, specification);
+    const documentId = Number(id);
+    if (isNaN(documentId)) {
+        throw new Error('Invalid document ID');
+    }
+
+    const response = await api.post(`/docs/specification/${documentId}`, specification);
     return response.data;
 };
 
